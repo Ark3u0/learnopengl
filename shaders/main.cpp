@@ -11,22 +11,24 @@
 const GLchar* vertexShaderSource = "#version 330 core\n"
         "\n"
         "layout (location = 0) in vec3 position;\n"
-        "out vec4 vertexColor;"
+        "layout (location = 1) in vec3 color;\n"
+        ""
+        "out vec3 ourColor;"
         "\n"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(position, 1.0);\n"
-        "   vertexColor = vec4(0.5f, 0.0f, 0.0f, 1.0f);"
+        "   ourColor = color;"
         "}\0";
 
 const GLchar* fragmentShaderSource = "#version 330 core\n"
         "\n"
-        "uniform vec4 ourColor;"
+        "in vec3 ourColor;"
         "out vec4 color;\n"
         "\n"
         "void main()\n"
         "{\n"
-        "   color = ourColor;\n"
+        "   color = vec4(ourColor, 1.0f);\n"
         "}\0";
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -105,9 +107,10 @@ int main() {
 
     // Initial triangle
     GLfloat triangleVertices[] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f, 0.5f, 0.0f,
+            // Positions        // Colors
+             0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // Bottom Right
+            -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // Bottom Left
+             0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f // Top
     };
 
     glGenVertexArrays(1, &vertexArrayObject);
@@ -120,9 +123,13 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
 
-    // Set our vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    // Position Attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
+
+    // Color Attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -136,12 +143,7 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        GLfloat timeValue = glfwGetTime();
-        GLfloat greenValue = (sin(timeValue) / 2) + 0.5;
-        GLint vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUseProgram(shaderProgram);
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
