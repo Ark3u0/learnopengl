@@ -3,3 +3,6 @@ OpenGL notes
 GLFW notes
 */.idea
 */build
+**/build
+**/.idea
+*.xml

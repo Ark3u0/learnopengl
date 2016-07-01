@@ -98,52 +98,47 @@ int main() {
     glDeleteShader(fragmentShader);
 
 
-
-
-
-    GLuint vertexArrayObject, vertexBufferObject, elementBufferObject;
-//            // Initial triangle
-//            -0.5f, -0.5f, 0.0f,
-//            0.5f, -0.5f, 0.0f,
-//            0.0f, 0.5f, 0.0f,
-//    };
-
-    GLfloat rectangleVertices[] = {
-            0.5f,  0.5f, 0.0f,  // Top Right
-            0.5f, -0.5f, 0.0f,  // Bottom Right
-            -0.5f, -0.5f, 0.0f,  // Bottom Left
-            -0.5f,  0.5f, 0.0f   // Top Left
+    GLuint vertexArrayObject[2], vertexBufferObject[2];
+    
+    GLfloat verticesForTriangleOne[] = {
+            // First Triangle
+            -1.0f, -0.5f, 0.0f,
+            0.0f, -0.5f, 0.0f,
+            -0.5f, 0.5f, 0.0f
     };
-    GLuint indices[] = {
-            0, 1, 3, // First Triangle
-            1, 2, 3  // Second Triangle
+    GLfloat verticesForTriangleTwo[] = {
+            // Second Triangle
+            1.0f, -0.5f, 0.0f,
+            0.0f, -0.5f, 0.0f,
+            0.5f, 0.5f, 0.0f
     };
 
-    glGenVertexArrays(1, &vertexArrayObject);
-    glGenBuffers(1, &vertexBufferObject);
-    glGenBuffers(1, &elementBufferObject);
+    glGenVertexArrays(2, vertexArrayObject);
+    glGenBuffers(2, vertexBufferObject);
 
-    // Bind Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
-    glBindVertexArray(vertexArrayObject);
+    // Bind Vertex Array Object for first triangle, then bind and set vertex buffer(s) and attribute pointer(s).
+    glBindVertexArray(vertexArrayObject[0]);
 
-    // Copy triangleVertices array in a buffer for OpenGL to use
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangleVertices), rectangleVertices, GL_STATIC_DRAW);
+    // Copy triangleOneVertices array in a buffer for OpenGL to use
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesForTriangleOne), verticesForTriangleOne, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Set our vertex attributes pointers
+    // Set our vertex attributes pointers for vertexArrayObject of triangle 1
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // Unbind the Vertex Array Object;
     glBindVertexArray(0);
 
-    // Uncommenting this call will result in wireframe polygons.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // Redo for second triangle
+    glBindVertexArray(vertexArrayObject[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesForTriangleTwo), verticesForTriangleTwo, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+
 
     while(!glfwWindowShouldClose(window))
     {
@@ -153,16 +148,16 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
-        glBindVertexArray(vertexArrayObject);
-//        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(vertexArrayObject[0]);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(vertexArrayObject[1]);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
 
         glfwSwapBuffers(window);
     }
-    glDeleteVertexArrays(1, &vertexArrayObject);
-    glDeleteBuffers(1, &vertexBufferObject);
-    glDeleteBuffers(1, &elementBufferObject);
+    glDeleteVertexArrays(2, vertexArrayObject);
+    glDeleteBuffers(2, vertexBufferObject);
 
     glfwTerminate();
     return 0;
