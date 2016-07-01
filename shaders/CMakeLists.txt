@@ -6,14 +6,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 find_package(glfw3 3.2 REQUIRED)
 find_package(GLEW REQUIRED)
 
-# Include headers
-include_directories(${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
-
 # Set variables
 set(GLFW_LIBS glfw)
 set(SOURCE_FILES main.cpp)
+set(HEADER_FILES shader.h)
 
-add_executable(shaders ${SOURCE_FILES})
+# Include headers
+include_directories(${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
+
+
+add_executable(shaders ${SOURCE_FILES} ${HEADER_FILES})
 
 # Link libraries to target
 target_link_libraries(shaders ${GLFW_LIBS} ${GLEW_LIBRARIES})
