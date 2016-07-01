@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(shaders)
+project(ex2)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Find Packages
@@ -15,11 +15,11 @@ set(HEADER_FILES shader.h)
 include_directories(${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
 
 
-add_executable(shaders ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(ex2 ${SOURCE_FILES} ${HEADER_FILES})
 
 # Link libraries to target
-target_link_libraries(shaders ${GLFW_LIBS} ${GLEW_LIBRARIES})
+target_link_libraries(ex2 ${GLFW_LIBS} ${GLEW_LIBRARIES})
 
 if (APPLE)
-    target_link_libraries(shaders "-framework OpenGL")
+    target_link_libraries(ex2 "-framework OpenGL")
 endif()

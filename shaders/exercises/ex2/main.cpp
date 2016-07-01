@@ -43,7 +43,7 @@ int main() {
     glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
     glViewport(0, 0, framebufferWidth, framebufferHeight);
 
-    Shader ourShader("/Users/sgarcia/Code/C++/opengl/shaders/shader.vs", "/Users/sgarcia/Code/C++/opengl/shaders/shader.frag");
+    Shader ourShader("/Users/sgarcia/Code/C++/opengl/shaders/exercises/ex2/shader.vs", "/Users/sgarcia/Code/C++/opengl/shaders/exercises/ex2/shader.frag");
 
     GLuint vertexArrayObject, vertexBufferObject;
 
@@ -85,7 +85,11 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        GLfloat xOffset = 0.5f;
         ourShader.Use();
+        GLint location = glGetUniformLocation(ourShader.Program, "horizontalOffset");
+        glUniform1f(location, xOffset);
+
         glBindVertexArray(vertexArrayObject);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
