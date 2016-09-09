@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.4)
 project(shaders)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(EXECUTABLE_OUTPUT_PATH ./bin)
+
+add_subdirectory(exercises/ex1)
+add_subdirectory(exercises/ex2)
+add_subdirectory(exercises/ex3)
 
 # Find Packages
 find_package(glfw3 3.2 REQUIRED)

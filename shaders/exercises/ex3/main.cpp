@@ -43,7 +43,7 @@ int main() {
     glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
     glViewport(0, 0, framebufferWidth, framebufferHeight);
 
-    Shader ourShader("/Users/sgarcia/Code/C++/opengl/shaders/shader.vs", "/Users/sgarcia/Code/C++/opengl/shaders/shader.frag");
+    Shader ourShader("/Users/sgarcia/Code/C++/opengl/shaders/exercises/ex3/shader.vs", "/Users/sgarcia/Code/C++/opengl/shaders/exercises/ex3/shader.frag");
 
     GLuint vertexArrayObject, vertexBufferObject;
 
