@@ -16,7 +16,7 @@ const GLchar* vertexShaderSource = "#version 330 core\n"
         "   gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
         "}\0";
 
-const GLchar* fragmentShaderSource = "#version 330 core\n"
+const GLchar* fragmentShaderSourceOne = "#version 330 core\n"
         "\n"
         "out vec4 color;\n"
         "\n"
@@ -73,7 +73,7 @@ int main() {
 
     // Create, Compile, and Validate Fragment Shader
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSourceOne, NULL);
     glCompileShader(fragmentShader);
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if(!success)

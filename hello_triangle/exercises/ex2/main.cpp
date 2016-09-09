@@ -16,7 +16,7 @@ const GLchar* vertexShaderSource = "#version 330 core\n"
         "   gl_Position = vec4(position.x, position.y, position.z, 1.0);\n"
         "}\0";
 
-const GLchar* fragmentShaderSource = "#version 330 core\n"
+const GLchar* fragmentShaderSourceOne = "#version 330 core\n"
         "\n"
         "out vec4 color;\n"
         "\n"
@@ -73,7 +73,7 @@ int main() {
 
     // Create, Compile, and Validate Fragment Shader
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSourceOne, NULL);
     glCompileShader(fragmentShader);
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
     if(!success)
@@ -98,47 +98,55 @@ int main() {
     glDeleteShader(fragmentShader);
 
 
+
+
+
     GLuint vertexArrayObject[2], vertexBufferObject[2];
-    
-    GLfloat verticesForTriangleOne[] = {
-            // First Triangle
-            -1.0f, -0.5f, 0.0f,
-            0.0f, -0.5f, 0.0f,
-            -0.5f, 0.5f, 0.0f
+
+    GLfloat vertices1[] = {
+            // Triangle 1
+            -1.0f, -0.5f, 0.0f, // Left-Point
+            0.0f, -0.5f, 0.0f, // Center
+            -0.5f, 0.5f, 0.0f // Left-Top
     };
-    GLfloat verticesForTriangleTwo[] = {
-            // Second Triangle
-            1.0f, -0.5f, 0.0f,
-            0.0f, -0.5f, 0.0f,
-            0.5f, 0.5f, 0.0f
+
+    GLfloat vertices2[] = {
+            // Triangle 2
+            1.0f, -0.5f, 0.0f, // Right-Point
+            0.0f, -0.5f, 0.0f, // Center
+            0.5f, 0.5f, 0.0f // Right-Top
+
     };
 
     glGenVertexArrays(2, vertexArrayObject);
     glGenBuffers(2, vertexBufferObject);
 
-    // Bind Vertex Array Object for first triangle, then bind and set vertex buffer(s) and attribute pointer(s).
+    // ROUND 1
+    // Bind Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
     glBindVertexArray(vertexArrayObject[0]);
 
-    // Copy triangleOneVertices array in a buffer for OpenGL to use
+    // Copy triangleVertices array in a buffer for OpenGL to use
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesForTriangleOne), verticesForTriangleOne, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
 
-    // Set our vertex attributes pointers for vertexArrayObject of triangle 1
+    // Set our vertex attributes pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // Unbind the Vertex Array Object;
     glBindVertexArray(0);
 
-    // Redo for second triangle
+
+    // ROUND 2
     glBindVertexArray(vertexArrayObject[1]);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verticesForTriangleTwo), verticesForTriangleTwo, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
     glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-
 
     while(!glfwWindowShouldClose(window))
     {
@@ -148,8 +156,11 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
+
         glBindVertexArray(vertexArrayObject[0]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindVertexArray(0);
+
         glBindVertexArray(vertexArrayObject[1]);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
