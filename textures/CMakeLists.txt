@@ -3,6 +3,8 @@ project(textures)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(EXECUTABLE_OUTPUT_PATH ./bin)
 
+add_subdirectory(exercises/ex1)
+
 set(SOURCE_FILES main.cpp)
 set(HEADER_FILES shader.h)
 
