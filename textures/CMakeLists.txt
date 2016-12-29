@@ -6,6 +6,7 @@ set(EXECUTABLE_OUTPUT_PATH ./bin)
 add_subdirectory(exercises/ex1)
 add_subdirectory(exercises/ex2)
 add_subdirectory(exercises/ex3)
+add_subdirectory(exercises/ex4)
 
 set(SOURCE_FILES main.cpp)
 set(HEADER_FILES shader.h)
