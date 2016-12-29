@@ -1,17 +1,4 @@
 // GLEW
-#include <GL/glew.h>
-#include <SOIL.h>
-
-// GLFW
-#include <GLFW/glfw3.h>
-
-#include <iostream>
-#include <cmath>
-
-#include "shader.h"
-
-void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode);
-
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <SOIL.h>
@@ -57,40 +44,84 @@ int main() {
     glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
     glViewport(0, 0, framebufferWidth, framebufferHeight);
 
-    Shader ourShader("/Users/sgarcia/Code/C++/opengl/shaders/shader.vs", "/Users/sgarcia/Code/C++/opengl/shaders/shader.frag");
+    Shader ourShader("/Users/sgarcia/Code/C++/opengl/textures/shader.vs", "/Users/sgarcia/Code/C++/opengl/textures/shader.frag");
 
-    GLuint vertexArrayObject, vertexBufferObject;
+    GLuint vertexArrayObject, vertexBufferObject, elementBufferObject;
 
-    // Initial triangle
-    GLfloat triangleVertices[] = {
-            // Positions        // Colors
-             0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // Bottom Right
-            -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, // Bottom Left
-             0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f // Top
+    GLfloat vertices[] = {
+            // Positions          // Colors           // Texture Coords
+            0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // Top Right
+            0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // Bottom Right
+            -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom Left
+            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // Top Left
+    };
+
+    GLuint indices[] = {
+      0, 1, 3, // First Triangle
+      1, 2, 3  // Second Triangle
     };
 
     glGenVertexArrays(1, &vertexArrayObject);
     glGenBuffers(1, &vertexBufferObject);
+    glGenBuffers(1, &elementBufferObject);
 
     // Bind Vertex Array Object first, then bind and set vertex buffer(s) and attribute pointer(s).
     glBindVertexArray(vertexArrayObject);
 
     // Copy triangleVertices array in a buffer for OpenGL to use
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Indices for elements
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Position Attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0); // Position coordinates
     glEnableVertexAttribArray(0);
-
-    // Color Attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat))); // Color values
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat))); // Texture coordinates
+    glEnableVertexAttribArray(2);
 
+
+    // Unbind array and element buffers
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     // Unbind the Vertex Array Object;
     glBindVertexArray(0);
+
+
+    // Load texture
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Set texture wrapping/filtering options (on currently bound texture object)
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Set texture filtering
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Load and generate texture
+    int width, height;
+    unsigned char *image = SOIL_load_image("/Users/sgarcia/Code/C++/opengl/asset/container.jpg", &width, &height, 0, SOIL_LOAD_RGB);
+    if (image == nullptr) {
+        std::cout << "Failed to load texture image." << std::endl;
+        return -1;
+    }
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(image);
+
+    // Unbind texture
+    glBindTexture(GL_TEXTURE_2D, 0);
+
 
     while(!glfwWindowShouldClose(window))
     {
@@ -100,14 +131,20 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         ourShader.Use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture"), 0);
+
         glBindVertexArray(vertexArrayObject);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
         glfwSwapBuffers(window);
     }
     glDeleteVertexArrays(1, &vertexArrayObject);
     glDeleteBuffers(1, &vertexBufferObject);
+    glDeleteBuffers(1, &elementBufferObject);
     glfwTerminate();
     return 0;
 }

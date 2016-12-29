@@ -7,15 +7,6 @@ add_subdirectory(exercises/ex1)
 add_subdirectory(exercises/ex2)
 add_subdirectory(exercises/ex3)
 
-# Find Packages
-find_package(glfw3 3.2 REQUIRED)
-find_package(GLEW REQUIRED)
-
-# Include headers
-include_directories(${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
-
-# Set variables
-set(GLFW_LIBS glfw)
 set(SOURCE_FILES main.cpp)
 
 add_executable(hello_triangle ${SOURCE_FILES})
