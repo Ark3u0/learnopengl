@@ -52,7 +52,7 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader ourShader("/Users/sgarcia/Code/C++/opengl/coordinate_systems/shader.vs", "/Users/sgarcia/Code/C++/opengl/coordinate_systems/shader.frag");
+    Shader ourShader("/Users/sgarcia/Code/C++/opengl/coordinate_systems/exercises/ex1/shader.vs", "/Users/sgarcia/Code/C++/opengl/coordinate_systems/exercises/ex1/shader.frag");
 
     GLuint vertexArrayObject, vertexBufferObject;
 
@@ -202,7 +202,6 @@ int main() {
         glUniform1i(glGetUniformLocation(ourShader.Program, "ourTexture2"), 1);
 
         glm::mat4 view, projection;
-
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         projection = glm::perspective(glm::radians(45.0f), (GLfloat) SCREEN_WIDTH / (GLfloat) SCREEN_HEIGHT, 0.1f, 100.0f);
 
@@ -215,7 +214,9 @@ int main() {
             glm::mat4 model;
             model = glm::translate(model, cubePositions[i]);
             GLfloat angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            if(i % 3 == 0)
+                angle = glm::radians(25.0f) * glfwGetTime();
+            model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
             glUniformMatrix4fv(glGetUniformLocation(ourShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
